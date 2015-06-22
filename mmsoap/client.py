@@ -54,12 +54,16 @@ class MMSoapClient(object):
     def __init__(self, userId=None, password=None, **kwargs):
         object_cache = ExtendedObjectCache()
         object_cache.setduration(days=10)
-        if "cache_location" in kwargs:
-            object_cache.setlocation(kwargs["cache_location"])
+        try:
+            object_cache.setlocation(kwargs.pop("cache_location"))
+        except KeyError:
+            pass
+
+        kwargs.setdefault("transport", WellBehavedHttpTransport())
 
         self.client = suds.client.Client(self.WSDL_URL,
                                          cache=object_cache,
-                                         transport=WellBehavedHttpTransport())
+                                         **kwargs)
 
         self.authentication = None
         self.authentication = self.create("AuthenticationType")
