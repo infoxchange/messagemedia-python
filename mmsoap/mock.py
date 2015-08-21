@@ -4,7 +4,10 @@ Test mock for MMSOAP API
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 
-import httplib
+try:
+    import httplib
+except ImportError:
+    import http.client as httplib
 from mock import patch, MagicMock
 
 from django.test import override_settings

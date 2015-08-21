@@ -11,11 +11,16 @@
     limitations under the License.
 """
 
-import suds
-from cache import ExtendedObjectCache
+from __future__ import absolute_import
 
+from suds.client import Client
 from suds.transport.http import HttpTransport as SudsHttpTransport
 
+# MessageMedia uses a differnt SOAP namespace URL
+from suds.bindings import binding
+binding.envns = ('SOAP-ENV', 'http://www.w3.org/2003/05/soap-envelope')
+
+from .cache import ExtendedObjectCache
 from .exceptions import *
 
 
@@ -61,9 +66,7 @@ class MMSoapClient(object):
 
         kwargs.setdefault("transport", WellBehavedHttpTransport())
 
-        self.client = suds.client.Client(self.WSDL_URL,
-                                         cache=object_cache,
-                                         **kwargs)
+        self.client = Client(self.WSDL_URL, cache=object_cache, **kwargs)
 
         self.authentication = None
         self.authentication = self.create("AuthenticationType")

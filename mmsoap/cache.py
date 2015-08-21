@@ -20,12 +20,14 @@
 Modifies the SUDS FileCache class to allow it to work on Windows.
 """
 
+import logging
 import os
 from tempfile import gettempdir as tmp
 from datetime import datetime as dt
 from datetime import timedelta
 
 import suds
+from suds.cache import Cache
 
 try:
     import cPickle as pickle
@@ -81,7 +83,7 @@ class ExtendedFileCache(suds.cache.Cache):
         @type duration: {unit:value}
         """
         if len(duration) == 1:
-            arg = duration.items()[0]
+            arg = next(iter(duration.items()))
             if not arg[0] in self.units:
                 raise Exception('must be: %s' % str(self.units))
             self.duration = arg
@@ -103,7 +105,7 @@ class ExtendedFileCache(suds.cache.Cache):
             if not os.path.isdir(self.location):
                 os.makedirs(self.location)
         except:
-            log.debug(self.location, exc_info=1)
+            logging.debug(self.location, exc_info=1)
         return self
 
     def put(self, id, bfr):
@@ -114,7 +116,7 @@ class ExtendedFileCache(suds.cache.Cache):
             f.close()
             return bfr
         except:
-            log.debug(id, exc_info=1)
+            logging.debug(id, exc_info=1)
             return bfr
 
     def putf(self, id, fp):
@@ -126,7 +128,7 @@ class ExtendedFileCache(suds.cache.Cache):
             f.close()
             return open(fn)
         except:
-            log.debug(id, exc_info=1)
+            logging.debug(id, exc_info=1)
             return fp
 
     def get(self, id):
@@ -158,7 +160,7 @@ class ExtendedFileCache(suds.cache.Cache):
         d = {self.duration[0]: self.duration[1]}
         expired = created + timedelta(**d)
         if expired < dt.now():
-            log.debug('%s expired, deleted', fn)
+            logging.debug('%s expired, deleted', fn)
             os.remove(fn)
 
     def clear(self):
@@ -166,7 +168,7 @@ class ExtendedFileCache(suds.cache.Cache):
             if os.path.isdir(fn):
                 continue
             if fn.startswith(self.fnprefix):
-                log.debug('deleted: %s', fn)
+                logging.debug('deleted: %s', fn)
                 os.remove(os.path.join(self.location, fn))
 
     def purge(self, id):
