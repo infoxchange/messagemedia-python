@@ -16,10 +16,6 @@ from __future__ import absolute_import
 from suds.client import Client
 from suds.transport.http import HttpTransport as SudsHttpTransport
 
-# MessageMedia uses a differnt SOAP namespace URL
-from suds.bindings import binding
-binding.envns = ('SOAP-ENV', 'http://www.w3.org/2003/05/soap-envelope')
-
 from .cache import ExtendedObjectCache
 from .exceptions import *
 
